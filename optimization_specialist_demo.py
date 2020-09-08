@@ -113,7 +113,7 @@ def crossover(pop):
         p1 = tournament(pop)
         p2 = tournament(pop)
 
-        n_offspring =   np.random.randint(1,3+1, 1)[0]
+        n_offspring =   np.random.C(1,3+1, 1)[0]
         offspring =  np.zeros( (n_offspring, n_vars) )
 
         for f in range(0,n_offspring):
