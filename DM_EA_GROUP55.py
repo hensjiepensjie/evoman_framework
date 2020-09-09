@@ -112,25 +112,7 @@ print( '\n GENERATION '+str(ini_g)+' '+str(round(fit_pop[best],6))+' '+str(round
 file_aux.write('\n'+str(ini_g)+' '+str(round(fit_pop[best],6))+' '+str(round(mean,6))+' '+str(round(std,6))   )
 file_aux.close()
 ###################Evolution Algorithm########################
-def recombination(self, x):
 
-<<<<<<< Updated upstream
-    for i in range(ini_g+1, gens):
-
-        # parent selection mechanism
-        parents1 = np.random.uniform(x)
-        parents2 = np.random.uniform(x)
-
-        child_part1 = np.array(parents1) * [1, 1, 0, 0]
-        child_part2 = np.array(parents2) * [0, 0, 1, 1]
-        new_child = child_part1 + child_part2
-
-        return new_child
-
-def mutation(self, x, std=0.1):
-    x_mutant = x + np.random.randn(x.shape[0], x.shape[1]) * std
-    return np.clip(x_mutant, a_min=[-2., 0., -5., 500.], a_max=[10., 10., 20., 2500.])
-=======
 last_sol = fit_pop[best]
 notimproved = 0
 
@@ -147,7 +129,6 @@ for i in range(ini_g+1, gens):
         notimproved = 0
 
     if notimproved >= 15:
->>>>>>> Stashed changes
 
         file_aux  = open(experiment_name+'/results.txt','a')
         file_aux.write('\ndoomsday')
