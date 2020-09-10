@@ -9,6 +9,7 @@ import sys, os
 sys.path.insert(0, 'evoman') 
 from environment import Environment
 from demo_controller import player_controller
+import matplotlib.pyplot as plt
 
 # imports other libs
 import time
@@ -16,7 +17,7 @@ import numpy as np
 from math import fabs,sqrt
 import glob, os
 
-experiment_name = 'dm_dummy_demo'
+experiment_name = 'test3'
 if not os.path.exists(experiment_name):
     os.makedirs(experiment_name)
 
@@ -25,7 +26,7 @@ n_hidden_neurons = 10
 
 # initializes environment with ai player using random controller, playing against static enemy
 env = Environment(experiment_name=experiment_name,
-                  enemies=[2],
+                  enemies=[4],
                   playermode="ai",
                   player_controller=player_controller(n_hidden_neurons),
                   enemymode="static",
@@ -42,14 +43,14 @@ ini = time.time()  # sets time marker
 run_mode = 'train' # train or test
 
 # number of weights for multilayer with 10 hidden neurons
-n_vars = (env.get_num_sensors()+1)*n_hidden_neurons + (n_hidden_neurons+1)*5
+number_of_weights = (env.get_num_sensors()+1)*n_hidden_neurons + (n_hidden_neurons+1)*5
 
 #Var pop and NN
 dom_u = 1 #upperbound NN value
 dom_l = -1 #lowerbound NN value
-npop = 5 #population size
-gens = 2 #number of generations
-
+npop = 20 #population size
+gens = 10 #number of generations
+mutation = 0.2
 ######################function definitions########################3
 
 #simulate with a specific NN
@@ -60,6 +61,39 @@ def simulation(env,x):
 # evaluation
 def evaluate(x):
     return np.array(list(map(lambda y: simulation(env,y), x)))
+
+def evolution(pop, fit_pop):
+    
+    plusmin = 1
+    
+    partkilled = int(npop/2)  # a quarter of the population
+    order = np.argsort(fit_pop)
+    partchanged = order[0:partkilled]
+
+    for x in partchanged:
+        for j in range(0,number_of_weights):
+            
+            prob1 = np.random.uniform(0,1)
+            prob4 = np.random.uniform(0,1)
+            if 0.5  <= prob1: #prob of changing the weight to the average of the two best individuals
+                pop[x][j] = pop[order[-1:]][0][j]*prob4 +  pop[order[-2:]][0][j]*(1-prob4)
+            
+            prob2 = np.random.uniform(0,1)
+            prob3 = np.random.uniform(0,1)
+            
+            if 0.5 <= prob3: 
+                plusmin = -1
+            else:
+                plusmin = 1
+            
+            if 0.5 <= prob2: #prob of changing the weight with an mutation 
+                pop[x][j] = pop[x][j]+(plusmin*mutation)
+                
+            
+        fit_pop[x]=evaluate([pop[x]])
+
+    return pop,fit_pop
+    
 
 #####################loading or creating a population#####################
 # loads file with the best solution for testing
@@ -79,7 +113,7 @@ if not os.path.exists(experiment_name+'/evoman_solstate'):
 
     print( '\nSTARTING A NEW EVOLUTION\n')
 
-    pop = np.random.uniform(dom_l, dom_u, (npop, n_vars))
+    pop = np.random.uniform(dom_l, dom_u, (npop, number_of_weights))
     fit_pop = evaluate(pop)
     best = np.argmax(fit_pop)
     mean = np.mean(fit_pop)
@@ -115,8 +149,12 @@ file_aux.close()
 
 last_sol = fit_pop[best]
 notimproved = 0
-
+results = [0]
+ 
 for i in range(ini_g+1, gens):
+    
+    
+    pop, fit_pop = evolution(pop, fit_pop)  
     
     best = np.argmax(fit_pop) #best solution in generation
     fit_pop[best] = float(evaluate(np.array([pop[best] ]))[0]) # repeats best eval, for stability issues
@@ -141,6 +179,12 @@ for i in range(ini_g+1, gens):
     std  =  np.std(fit_pop)
     mean = np.mean(fit_pop)
 
+    results.append(fit_pop[best])
+    plt.plot(results)
+    plt.ylabel('Fitness')
+    plt.xlabel('generation')
+    plt.show()
+    
     ###################save results#####################
     # saves results
     file_aux  = open(experiment_name+'/results.txt','a')
