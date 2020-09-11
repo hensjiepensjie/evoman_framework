@@ -17,7 +17,7 @@ import numpy as np
 from math import fabs,sqrt
 import glob, os
 
-experiment_name = 'test3'
+experiment_name = 'test1.2'
 if not os.path.exists(experiment_name):
     os.makedirs(experiment_name)
 
@@ -26,7 +26,7 @@ n_hidden_neurons = 10
 
 # initializes environment with ai player using random controller, playing against static enemy
 env = Environment(experiment_name=experiment_name,
-                  enemies=[4],
+                  enemies=[2],
                   playermode="ai",
                   player_controller=player_controller(n_hidden_neurons),
                   enemymode="static",
@@ -48,9 +48,9 @@ number_of_weights = (env.get_num_sensors()+1)*n_hidden_neurons + (n_hidden_neuro
 #Var pop and NN
 dom_u = 1 #upperbound NN value
 dom_l = -1 #lowerbound NN value
-npop = 20 #population size
+npop = 20 #population size       #if changed check parent selection
 gens = 10 #number of generations
-mutation = 0.2
+mutation_prob = 0.25
 ######################function definitions########################3
 
 #simulate with a specific NN
@@ -64,30 +64,30 @@ def evaluate(x):
 
 def evolution(pop, fit_pop):
     
-    plusmin = 1
+    parent1 = -1
+    parent2 = -2
     
     partkilled = int(npop/2)  # a quarter of the population
     order = np.argsort(fit_pop)
     partchanged = order[0:partkilled]
-
+    
     for x in partchanged:
+        
+        #parent selection
+        parent1=-1*np.random.choice(9, p=[0.25, 0.20, 0.15, 0.10, 0.10, 0.05, 0.05, 0.05, 0.05])
+        parent2=-1*np.random.choice(9, p=[0.25, 0.20, 0.15, 0.10, 0.10, 0.05, 0.05, 0.05, 0.05])
+        
         for j in range(0,number_of_weights):
             
             prob1 = np.random.uniform(0,1)
-            prob4 = np.random.uniform(0,1)
-            if 0.5  <= prob1: #prob of changing the weight to the average of the two best individuals
-                pop[x][j] = pop[order[-1:]][0][j]*prob4 +  pop[order[-2:]][0][j]*(1-prob4)
-            
             prob2 = np.random.uniform(0,1)
+            if 0.5  <= prob1: #prob of changing the weight to the average of the two best individuals
+                pop[x][j] = pop[order[parent1:]][0][j]*prob2 +  pop[order[parent2:]][0][j]*(1-prob2)
+            
             prob3 = np.random.uniform(0,1)
             
-            if 0.5 <= prob3: 
-                plusmin = -1
-            else:
-                plusmin = 1
-            
-            if 0.5 <= prob2: #prob of changing the weight with an mutation 
-                pop[x][j] = pop[x][j]+(plusmin*mutation)
+            if mutation_prob <= prob3: #prob of changing the weight with an mutation 
+                pop[x][j] = np.random.uniform(-1,1)
                 
             
         fit_pop[x]=evaluate([pop[x]])
