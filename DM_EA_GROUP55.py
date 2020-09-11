@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 # imports other libs
 import time
 import numpy as np
+import random
 from math import fabs,sqrt
 import glob, os
 
@@ -105,7 +106,13 @@ def evolution(pop, fit_pop):
         fit_pop[x]=evaluate([pop[x]])
 
     return pop,fit_pop
-    
+
+# Generates random value in [-1,x) using a power function for bias
+# Power>1 creates a bias towards x; Power<1 creates a bias towards -1
+# size of power increases bias
+def random_bias(x, power):
+    return math.pow(random.random(), power) * (x + 1) - 1
+
 
 #####################loading or creating a population#####################
 # loads file with the best solution for testing
