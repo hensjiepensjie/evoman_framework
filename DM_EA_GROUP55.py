@@ -113,6 +113,11 @@ def evolution(pop, fit_pop):
 def random_bias(x, power):
     return math.pow(random.random(), power) * (x + 1) - 1
 
+# Random weighted choice out of list integers
+def random_choice(min, max, weights):
+    parents = range(min, max+1)
+    choice = np.random.choice(parents, p=weights)
+    return choice
 
 #####################loading or creating a population#####################
 # loads file with the best solution for testing
