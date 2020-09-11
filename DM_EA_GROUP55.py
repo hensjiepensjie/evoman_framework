@@ -17,7 +17,7 @@ import numpy as np
 from math import fabs,sqrt
 import glob, os
 
-experiment_name = 'test1.2'
+experiment_name = 'test3.2'
 if not os.path.exists(experiment_name):
     os.makedirs(experiment_name)
 
@@ -26,7 +26,7 @@ n_hidden_neurons = 10
 
 # initializes environment with ai player using random controller, playing against static enemy
 env = Environment(experiment_name=experiment_name,
-                  enemies=[2],
+                  enemies=[4],
                   playermode="ai",
                   player_controller=player_controller(n_hidden_neurons),
                   enemymode="static",
@@ -62,6 +62,18 @@ def simulation(env,x):
 def evaluate(x):
     return np.array(list(map(lambda y: simulation(env,y), x)))
 
+def parent_selection_roulette(fit_pop):
+    
+
+    max = sum(fit_pop.values())
+    pick = 0
+    pick = np.uniform(0, max)
+    current = 0
+    for key, value in fit_pop.items():
+        current += value
+        if current > pick:
+            return key
+
 def evolution(pop, fit_pop):
     
     parent1 = -1
@@ -74,8 +86,8 @@ def evolution(pop, fit_pop):
     for x in partchanged:
         
         #parent selection
-        parent1=-1*np.random.choice(9, p=[0.25, 0.20, 0.15, 0.10, 0.10, 0.05, 0.05, 0.05, 0.05])
-        parent2=-1*np.random.choice(9, p=[0.25, 0.20, 0.15, 0.10, 0.10, 0.05, 0.05, 0.05, 0.05])
+        parent1= -1*parent_selection_roulette(fit_pop)
+        parent2= -1*parent_selection_roulette(fit_pop)
         
         for j in range(0,number_of_weights):
             
@@ -122,6 +134,7 @@ if not os.path.exists(experiment_name+'/evoman_solstate'):
     solutions = [pop, fit_pop]
     env.update_solutions(solutions)
 
+    print(fit_pop)
 else:
 
     print( '\nCONTINUING WITH AN EVOLUTION\n')
@@ -149,7 +162,7 @@ file_aux.close()
 
 last_sol = fit_pop[best]
 notimproved = 0
-results = [0]
+results = []
  
 for i in range(ini_g+1, gens):
     
