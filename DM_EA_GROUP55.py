@@ -72,8 +72,8 @@ def evolution(pop, fit_pop,i):
     for x in partchanged:
         
         #parent selection (tournament)
-        parent1 = tournament(pop, fit_pop)
-        parent2 = tournament(pop, fit_pop)
+        parent1 = tournament(fit_pop)
+        parent2 = tournament(fit_pop)
 
         # crossover
         for j in range(0,number_of_weights):
@@ -84,7 +84,7 @@ def evolution(pop, fit_pop,i):
                 pop[x][j] = pop[order[parent1:]][0][j]
             else:
                 pop[x][j] = pop[order[parent2:]][0][j]
-            
+
             prob3 = np.random.uniform(0,1)
             
             mutation_prob = 1 - 0.9 * (i/gens) #variable mutation prob
@@ -98,7 +98,7 @@ def evolution(pop, fit_pop,i):
     return pop,fit_pop
 
 # Choose best individual fitness-wise from 2 random candidates
-def tournament(pop, fit_pop):
+def tournament(fit_pop):
     candidate_1, candidate_2 = np.random.choice(range(-npop, -1), 2)
     if fit_pop[candidate_1] > fit_pop[candidate_2]:
         return candidate_1
