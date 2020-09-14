@@ -81,17 +81,16 @@ def evolution(pop, fit_pop,i):
             prob1 = np.random.uniform(0,1)
 
             if 0.5  <= prob1: #prob of changing the weight to the average of the two best individuals
-                pop[x][j] = pop[order[parent1:]][0][j]
+                pop[x][j] = pop[parent1][0][j]
             else:
-                pop[x][j] = pop[order[parent2:]][0][j]
+                pop[x][j] = pop[parent2][0][j]
 
             prob3 = np.random.uniform(0,1)
             
             mutation_prob = 1 - 0.9 * (i/gens) #variable mutation prob
             
             if mutation_prob <= prob3: #prob of changing the weight with an mutation 
-                pop[x][j] = np.random.uniform(-1,1)
-                
+                pop[x][j] = np.random.uniform(-1,1)              
             
         fit_pop[x]=evaluate([pop[x]])
 
