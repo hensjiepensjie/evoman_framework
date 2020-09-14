@@ -18,7 +18,7 @@ import random
 from math import fabs,sqrt
 import glob, os
 
-experiment_name = 'test3.2'
+experiment_name = 'test3.3'
 if not os.path.exists(experiment_name):
     os.makedirs(experiment_name)
 
@@ -49,7 +49,7 @@ number_of_weights = (env.get_num_sensors()+1)*n_hidden_neurons + (n_hidden_neuro
 #Var pop and NN
 dom_u = 1 #upperbound NN value
 dom_l = -1 #lowerbound NN value
-npop = 20 #population size       #if changed check parent selection
+npop = 10 #population size       #if changed check parent selection
 gens = 10 #number of generations
 mutation_prob = 0.20
 ######################function definitions########################3
@@ -68,13 +68,14 @@ def evolution(pop, fit_pop,i):
     partkilled = int(npop/2)  # a half of the population
     order = np.argsort(fit_pop)
     partchanged = order[0:partkilled]
-    
+
     for x in partchanged:
         
-        #parent selection
-        parent1 = -1#parent_selection_roulette()
-        parent2 = -2#parent_selection_roulette()
-        
+        #parent selection (tournament)
+        parent1 = tournament(pop, fit_pop)
+        parent2 = tournament(pop, fit_pop)
+
+        # crossover
         for j in range(0,number_of_weights):
             
             prob1 = np.random.uniform(0,1)
@@ -86,7 +87,7 @@ def evolution(pop, fit_pop,i):
             
             prob3 = np.random.uniform(0,1)
             
-            mutation_prob = 1- 0.9 * (i/gens) #variable mutation prob
+            mutation_prob = 1 - 0.9 * (i/gens) #variable mutation prob
             
             if mutation_prob <= prob3: #prob of changing the weight with an mutation 
                 pop[x][j] = np.random.uniform(-1,1)
@@ -96,6 +97,13 @@ def evolution(pop, fit_pop,i):
 
     return pop,fit_pop
 
+# Choose best individual fitness-wise from 2 random candidates
+def tournament(pop, fit_pop):
+    candidate_1, candidate_2 = np.random.choice(range(-npop, -1), 2)
+    if fit_pop[candidate_1] > fit_pop[candidate_2]:
+        return candidate_1
+    else:
+        return candidate_2
 
 # Random weighted choice out of list integers
 def random_choice(min, max, weights):
@@ -200,14 +208,10 @@ for i in range(ini_g+1, gens):
         notimproved = 0
 
     best = np.argmax(fit_pop)
-    std  =  np.std(fit_pop)
+    std  = np.std(fit_pop)
     mean = np.mean(fit_pop)
 
     results.append(fit_pop[best])
-    plt.plot(results)
-    plt.ylabel('Fitness')
-    plt.xlabel('generation')
-    plt.show()
     
     ###################save results#####################
     # saves results
@@ -228,3 +232,7 @@ for i in range(ini_g+1, gens):
     env.update_solutions(solutions)
     env.save_state()
 
+plt.plot(results)
+plt.ylabel('Fitness')
+plt.xlabel('generation')
+plt.show()
