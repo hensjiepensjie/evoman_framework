@@ -49,8 +49,8 @@ number_of_weights = (env.get_num_sensors()+1)*n_hidden_neurons + (n_hidden_neuro
 #Var pop and NN
 dom_u = 1 #upperbound NN value
 dom_l = -1 #lowerbound NN value
-npop = 10 #population size       #if changed check parent selection
-gens = 10 #number of generations
+npop = 100 #population size       #if changed check parent selection
+gens = 30 #number of generations
 mutation_prob = 0.20
 ######################function definitions########################3
 
@@ -81,9 +81,9 @@ def evolution(pop, fit_pop,i):
             prob1 = np.random.uniform(0,1)
 
             if 0.5  <= prob1: #prob of changing the weight to the average of the two best individuals
-                pop[x][j] = pop[order[parent1:]][0][j]
+                pop[x][j] = pop[parent1][j]
             else:
-                pop[x][j] = pop[order[parent2:]][0][j]
+                pop[x][j] = pop[parent2][j]
 
             prob3 = np.random.uniform(0,1)
             
