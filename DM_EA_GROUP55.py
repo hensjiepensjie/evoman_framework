@@ -18,40 +18,38 @@ import random
 from math import fabs,sqrt
 import glob, os
 
-experiment_name = 'test3.3'
-if not os.path.exists(experiment_name):
-    os.makedirs(experiment_name)
-
 #number of....
 n_hidden_neurons = 10
 
-# initializes environment with ai player using random controller, playing against static enemy
-env = Environment(experiment_name=experiment_name,
-                  enemies=[4],
-                  playermode="ai",
-                  player_controller=player_controller(n_hidden_neurons),
-                  enemymode="static",
-                  level=2,
-                  speed="fastest")
-
-
-# default environment fitness is assumed for experiment
-env.state_to_log() # checks environment state
-
 ini = time.time()  # sets time marker
 
-#run type train or test 
-run_mode = 'train' # train or test
+enemies=[4]
 
-# number of weights for multilayer with 10 hidden neurons
-number_of_weights = (env.get_num_sensors()+1)*n_hidden_neurons + (n_hidden_neurons+1)*5
+#run type train or test 
+run_mode = 'train' # train or test or trainten
+
+if run_mode == 'test':
+    experiment_name = 'test4.2'
 
 #Var pop and NN
 dom_u = 1 #upperbound NN value
 dom_l = -1 #lowerbound NN value
-npop = 100 #population size       #if changed check parent selection
-gens = 30 #number of generations
+npop = 5 #population size       #if changed check parent selection
+gens = 3 #number of generations
 mutation_prob = 0.20
+
+def sim_environment(experiment_name, enemies):
+    # initializes environment with ai player using random controller, playing against static enemy
+    env = Environment(experiment_name=experiment_name,
+                      enemies=enemies,  # Change enemies in top of file
+                      playermode="ai",
+                      player_controller=player_controller(n_hidden_neurons),
+                      enemymode="static",
+                      level=2,
+                      speed="fastest")
+
+    return env
+
 ######################function definitions########################3
 
 #simulate with a specific NN
@@ -129,7 +127,7 @@ def kill_population(pop, fit_pop):
 #####################loading or creating a population#####################
 # loads file with the best solution for testing
 if run_mode =='test':
-
+    env = sim_environment(experiment_name, enemies)
     bsol = np.loadtxt(experiment_name+'/best.txt')
     print( '\n RUNNING SAVED BEST SOLUTION \n')
     env.update_parameter('speed','normal')
@@ -137,102 +135,121 @@ if run_mode =='test':
 
     sys.exit(0)
 
+if run_mode == 'trainten':
+    total_runs = 10
+else:
+    total_runs = 1
 
 # initializes population loading old solutions or generating new ones
 
-if not os.path.exists(experiment_name+'/evoman_solstate'):
+for runs in range(total_runs):
+    experiment_name = 'test{}.{}'.format(enemies[0], runs+1)
+    if not os.path.exists(experiment_name):
+        os.makedirs(experiment_name)
 
-    print( '\nSTARTING A NEW EVOLUTION\n')
+    # initializes environment with ai player using random controller, playing against static enemy
+    env = sim_environment(experiment_name, enemies)
 
-    pop = np.random.uniform(dom_l, dom_u, (npop, number_of_weights))
-    fit_pop = evaluate(pop)
-    best = np.argmax(fit_pop)
-    mean = np.mean(fit_pop)
-    std = np.std(fit_pop)
-    ini_g = 0
-    solutions = [pop, fit_pop]
-    env.update_solutions(solutions)
+    # default environment fitness is assumed for experiment
+    env.state_to_log()  # checks environment state
 
-    print(fit_pop)
-else:
+    # number of weights for multilayer with 10 hidden neurons
+    number_of_weights = (env.get_num_sensors() + 1) * n_hidden_neurons + (n_hidden_neurons + 1) * 5
 
-    print( '\nCONTINUING WITH AN EVOLUTION\n')
+    if not os.path.exists(experiment_name+'/evoman_solstate'):
 
-    env.load_state()
-    pop = env.solutions[0]
-    fit_pop = env.solutions[1]
+        print( '\nSTARTING A NEW EVOLUTION\n')
 
-    best = np.argmax(fit_pop)
-    mean = np.mean(fit_pop)
-    std = np.std(fit_pop)
+        pop = np.random.uniform(dom_l, dom_u, (npop, number_of_weights))
+        fit_pop = evaluate(pop)
+        best = np.argmax(fit_pop)
+        mean = np.mean(fit_pop)
+        std = np.std(fit_pop)
+        ini_g = 0
+        solutions = [pop, fit_pop]
+        env.update_solutions(solutions)
 
-    # finds last generation number
-    file_aux  = open(experiment_name+'/gen.txt','r')
-    ini_g = int(file_aux.readline())
-    file_aux.close()
+        print(fit_pop)
 
-# saves results for first pop
-file_aux  = open(experiment_name+'/results.txt','a')
-file_aux.write('\n\ngen best mean std')
-print( '\n GENERATION '+str(ini_g)+' '+str(round(fit_pop[best],6))+' '+str(round(mean,6))+' '+str(round(std,6)))
-file_aux.write('\n'+str(ini_g)+' '+str(round(fit_pop[best],6))+' '+str(round(mean,6))+' '+str(round(std,6))   )
-file_aux.close()
-###################Evolution Algorithm########################
-
-last_sol = fit_pop[best]
-notimproved = 0
-results = []
- 
-for i in range(ini_g+1, gens):
-    
-    
-    pop, fit_pop = evolution(pop, fit_pop,i)  
-    
-    best = np.argmax(fit_pop) #best solution in generation
-    fit_pop[best] = float(evaluate(np.array([pop[best] ]))[0]) # repeats best eval, for stability issues
-    best_sol = fit_pop[best]
-
-    if best_sol <= last_sol:
-        notimproved += 1
     else:
-        last_sol = best_sol
-        notimproved = 0
 
-    if notimproved >= 5:
+        print( '\nCONTINUING WITH AN EVOLUTION\n')
 
-        file_aux  = open(experiment_name+'/results.txt','a')
-        file_aux.write('\nReset the worst individuals to random.')
+        env.load_state()
+        pop = env.solutions[0]
+        fit_pop = env.solutions[1]
+
+        best = np.argmax(fit_pop)
+        mean = np.mean(fit_pop)
+        std = np.std(fit_pop)
+
+        # finds last generation number
+        file_aux  = open(experiment_name+'/gen.txt','r')
+        ini_g = int(file_aux.readline())
         file_aux.close()
 
-        pop, fit_pop = kill_population(pop,fit_pop)
-        notimproved = 0
-
-    best = np.argmax(fit_pop)
-    std  = np.std(fit_pop)
-    mean = np.mean(fit_pop)
-
-    results.append(fit_pop[best])
-    
-    ###################save results#####################
-    # saves results
+    # saves results for first pop
     file_aux  = open(experiment_name+'/results.txt','a')
-    print( '\n GENERATION '+str(i)+' '+str(round(fit_pop[best],6))+' '+str(round(mean,6))+' '+str(round(std,6)))
-    file_aux.write('\n'+str(i)+' '+str(round(fit_pop[best],6))+' '+str(round(mean,6))+' '+str(round(std,6))   )
+    file_aux.write('\n\ngen best mean std')
+    print( '\n GENERATION '+str(ini_g)+' '+str(round(fit_pop[best],6))+' '+str(round(mean,6))+' '+str(round(std,6)))
+    file_aux.write('\n'+str(ini_g)+' '+str(round(fit_pop[best],6))+' '+str(round(mean,6))+' '+str(round(std,6))   )
     file_aux.close()
+    ###################Evolution Algorithm########################
 
-    # saves generation number
-    file_aux  = open(experiment_name+'/gen.txt','w')
-    file_aux.write(str(i))
-    file_aux.close()
+    last_sol = fit_pop[best]
+    notimproved = 0
+    results = []
 
-    # saves file with the best solution
-    np.savetxt(experiment_name+'/best.txt',pop[best])
-    # saves simulation state
-    solutions = [pop, fit_pop]
-    env.update_solutions(solutions)
-    env.save_state()
+    for i in range(ini_g+1, gens):
 
-plt.plot(results)
-plt.ylabel('Fitness')
-plt.xlabel('generation')
-plt.show()
+        pop, fit_pop = evolution(pop, fit_pop, i)
+
+        best = np.argmax(fit_pop) #best solution in generation
+        fit_pop[best] = float(evaluate(np.array([pop[best] ]))[0]) # repeats best eval, for stability issues
+        best_sol = fit_pop[best]
+
+        if best_sol <= last_sol:
+            notimproved += 1
+        else:
+            last_sol = best_sol
+            notimproved = 0
+
+        if notimproved >= 5:
+
+            file_aux  = open(experiment_name+'/results.txt','a')
+            file_aux.write('\nReset the worst individuals to random.')
+            file_aux.close()
+
+            pop, fit_pop = kill_population(pop,fit_pop)
+            notimproved = 0
+
+        best = np.argmax(fit_pop)
+        std  = np.std(fit_pop)
+        mean = np.mean(fit_pop)
+
+        results.append(fit_pop[best])
+
+        ###################save results#####################
+        # saves results
+        file_aux  = open(experiment_name+'/results.txt','a')
+        print( '\n GENERATION '+str(i)+' '+str(round(fit_pop[best],6))+' '+str(round(mean,6))+' '+str(round(std,6)))
+        file_aux.write('\n'+str(i)+' '+str(round(fit_pop[best],6))+' '+str(round(mean,6))+' '+str(round(std,6))   )
+        file_aux.close()
+
+        # saves generation number
+        file_aux  = open(experiment_name+'/gen.txt','w')
+        file_aux.write(str(i))
+        file_aux.close()
+
+        # saves file with the best solution
+        np.savetxt(experiment_name+'/best.txt',pop[best])
+        # saves simulation state
+        solutions = [pop, fit_pop]
+        env.update_solutions(solutions)
+        env.save_state()
+
+    if run_mode == 'train':
+        plt.plot(results)
+        plt.ylabel('Fitness')
+        plt.xlabel('generation')
+        plt.show()
