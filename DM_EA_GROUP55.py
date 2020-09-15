@@ -223,10 +223,6 @@ def run_simulation(args):
                 notimproved = 0
 
             if notimproved >= 5:
-                file_aux = open(experiment_name + '/results.txt', 'a')
-                file_aux.write('\nReset the worst individuals to random.')
-                file_aux.close()
-
                 pop, fit_pop = kill_population(pop, fit_pop, npop, number_of_weights)
                 notimproved = 0
 
