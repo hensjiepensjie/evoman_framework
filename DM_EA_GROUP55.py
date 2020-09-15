@@ -29,13 +29,13 @@ enemies=[4]
 run_mode = 'train' # train or test or trainten
 
 if run_mode == 'test':
-    experiment_name = 'test4.2'
+    experiment_name = 'test4.1'
 
 #Var pop and NN
 dom_u = 1 #upperbound NN value
 dom_l = -1 #lowerbound NN value
-npop = 5 #population size       #if changed check parent selection
-gens = 3 #number of generations
+npop = 50 #population size       #if changed check parent selection
+gens = 10 #number of generations
 mutation_prob = 0.20
 
 def sim_environment(experiment_name, enemies):
@@ -66,12 +66,13 @@ def evolution(pop, fit_pop,i):
     partkilled = int(npop/2)  # a half of the population
     order = np.argsort(fit_pop)
     partchanged = order[0:partkilled]
+    best_parents = order[partkilled:]
 
     for x in partchanged:
         
         #parent selection (tournament)
-        parent1 = tournament(fit_pop)
-        parent2 = tournament(fit_pop)
+        parent1 = tournament(best_parents, fit_pop)
+        parent2 = tournament(best_parents, fit_pop)
 
         # crossover
         for j in range(0,number_of_weights):
@@ -96,8 +97,8 @@ def evolution(pop, fit_pop,i):
     return pop,fit_pop
 
 # Choose best individual fitness-wise from 2 random candidates
-def tournament(fit_pop):
-    candidate_1, candidate_2 = np.random.choice(range(-npop, -1), 2)
+def tournament(parent_range, fit_pop):
+    candidate_1, candidate_2 = np.random.choice(parent_range, 2)
     if fit_pop[candidate_1] > fit_pop[candidate_2]:
         return candidate_1
     else:
@@ -112,7 +113,7 @@ def random_choice(min, max, weights):
 
 def kill_population(pop, fit_pop):
     
-    partkilled = int(npop/2)  # a quarter of the population
+    partkilled = int(npop/4)  # a quarter of the population
     order = np.argsort(fit_pop)
     partchanged = order[0:partkilled]
     
