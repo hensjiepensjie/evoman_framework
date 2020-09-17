@@ -43,13 +43,15 @@ def evaluate(x, env):
 
 def evolution(pop, fit_pop, npop, gens, i, env, number_of_weights):
     
-    partkilled = int(npop/2)  # a half of the population
+    partkilled = int(npop/4)  # a quarter of the population
+    bestparents = int(npop/2) # a half of the population
     order = np.argsort(fit_pop)
     partchanged = order[0:partkilled]
-    best_parents = order[partkilled:]
+    partmutated = order[partkilled:bestparents]
+    best_parents = order[bestparents:]
+    iter = 0 # counter
 
     for x in partchanged:
-        
         #parent selection (tournament)
         parent1 = tournament(best_parents, fit_pop)
         parent2 = tournament(best_parents, fit_pop)
@@ -64,15 +66,32 @@ def evolution(pop, fit_pop, npop, gens, i, env, number_of_weights):
             else:
                 pop[x][j] = pop[parent2][j]
 
-            prob3 = np.random.uniform(0,1)
-            
-            mutation_prob = 1 - 0.9 * (i/gens) #variable mutation prob
-            
-            if mutation_prob <= prob3: #prob of changing the weight with an mutation 
-                pop[x][j] = np.random.uniform(-1,1)
-                
-            
+            #prob3 = np.random.uniform(0, 1)
+
+            #mutation_prob = 1 - 0.9 * (i / gens)  # variable mutation prob
+
+            #if mutation_prob <= prob3:  # prob of changing the weight with an mutation
+            #    pop[x][j] = np.random.uniform(-1, 1)
+
         fit_pop[x]=evaluate([pop[x]], env)
+
+    for x in partmutated:
+        # Change individual to best parent
+        pop[x] = pop[best_parents[-1-iter]]
+        mutation_prob = 1 - 0.9 * (i / gens)  # variable mutation prob
+
+        # Amount of weights to mutate
+        #amount_to_mutate = int(mutation_prob * number_of_weights)
+
+        #mutation_weights = np.random.choice(range(0, number_of_weights), amount_to_mutate)
+
+        for j in range(0,number_of_weights):
+            prob3 = np.random.uniform(0,1)
+            if mutation_prob <= prob3: # prob of changing the weight with an mutation
+                pop[x][j] = np.random.uniform(-1, 1)
+
+        fit_pop[x] = evaluate([pop[x]], env)
+        iter += 1
 
     return pop,fit_pop
 

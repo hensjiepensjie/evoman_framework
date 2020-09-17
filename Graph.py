@@ -39,27 +39,27 @@ def simulation(env,x):
     f,p,e,t = env.play(pcont=x)
     return f
 
-for i in range(1,runs+1):
-    file = 'test{}.{}'.format(enemy, i)
-    file_location = 'enemy_{}'.format(enemy)
-    experiment_name = (file_location + '/' + file)
-    gainTotal = 0
+#for i in range(1,runs+1):
+#    file = 'test{}.{}'.format(enemy, i)
+#    file_location = 'enemy_{}'.format(enemy)
+#    experiment_name = (file_location + '/' + file)
+#    gainTotal = 0
     
     
-    for j in range(1,6):
-        env = sim_environment(experiment_name, enemy, n_hidden_neurons)
-        bsol = np.loadtxt(file_location + '/' + file + '/best.txt')
-        f,p,e,t = env.play(pcont=bsol)
-        gain1 = p - e
-        gainTotal = gainTotal + gain1
-        print(gainTotal)
+#    for j in range(1,6):
+#        env = sim_environment(experiment_name, enemy, n_hidden_neurons)
+#        bsol = np.loadtxt(file_location + '/' + file + '/best.txt')
+#        f,p,e,t = env.play(pcont=bsol)
+#        gain1 = p - e
+#        gainTotal = gainTotal + gain1
+#        print(gainTotal)
     
-    gainscores.append(gainTotal/5)
+#    gainscores.append(gainTotal/5)
 
-plt.boxplot(gainscores)
+#plt.boxplot(gainscores)
 
-sys.exit(0
-         )
+#sys.exit(0)
+
 for i in range(1,runs+1):
     file = 'test{}.{}'.format(enemy, i)
     file_location = 'enemy_{}'.format(enemy)
@@ -74,6 +74,7 @@ result_mean['average'] = result_mean.mean(numeric_only=True, axis=1)
 result_std['average'] = result_std.mean(numeric_only=True, axis=1) 
 
 plt.plot(result_best["average"])
+plt.fill_between(range(len(result_best["average"])), result_best["average"]-result_std["average"], result_best["average"]+result_std["average"], color='gray', alpha=0.4)
 plt.ylabel('best Fitness')
 plt.xlabel('')
 plt.show()
