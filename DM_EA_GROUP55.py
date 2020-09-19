@@ -41,15 +41,21 @@ def simulation(env,x):
 def evaluate(x, env):
     return np.array(list(map(lambda y: simulation(env,y), x)))
 
-def evolution(pop, fit_pop, npop, gens, i, env, number_of_weights):
-    
-    partkilled = int(npop/4)  # a quarter of the population
-    bestparents = int(npop/2) # a half of the population
-    order = np.argsort(fit_pop)
-    partchanged = order[0:partkilled]
-    partmutated = order[partkilled:bestparents]
-    best_parents = order[bestparents:]
-    iter = 0 # counter
+def evolution(pop, fit_pop, npop, gens, i, env, number_of_weights, algorithm = 'new'):
+    if algorithm == 'old':
+        partkilled = int(npop/2)  # a quarter of the population
+        order = np.argsort(fit_pop)
+        partchanged = order[0:partkilled]
+        best_parents = order[partkilled:]
+
+    if algorithm == 'new':
+        partkilled = int(npop/4)  # a quarter of the population
+        bestparents = int(npop/2) # a half of the population
+        order = np.argsort(fit_pop)
+        partchanged = order[0:partkilled]
+        partmutated = order[partkilled:bestparents]
+        best_parents = order[bestparents:]
+        iter = 0 # counter
 
     for x in partchanged:
         #parent selection (tournament)
@@ -66,32 +72,29 @@ def evolution(pop, fit_pop, npop, gens, i, env, number_of_weights):
             else:
                 pop[x][j] = pop[parent2][j]
 
-            #prob3 = np.random.uniform(0, 1)
+            if algorithm == 'old':
+                prob3 = np.random.uniform(0, 1)
 
-            #mutation_prob = 1 - 0.9 * (i / gens)  # variable mutation prob
+                mutation_prob = 1 - 0.9 * (i / gens)  # variable mutation prob
 
-            #if mutation_prob <= prob3:  # prob of changing the weight with an mutation
-            #    pop[x][j] = np.random.uniform(-1, 1)
+                if mutation_prob <= prob3:  # prob of changing the weight with an mutation
+                    pop[x][j] = np.random.uniform(-1, 1)
 
         fit_pop[x]=evaluate([pop[x]], env)
 
-    for x in partmutated:
-        # Change individual to best parent
-        pop[x] = pop[best_parents[-1-iter]]
-        mutation_prob = 1 - 0.9 * (i / gens)  # variable mutation prob
+    if algorithm == 'new':
+        for x in partmutated:
+            # Change individual to best parent
+            pop[x] = pop[best_parents[-1-iter]]
+            mutation_prob = 1 - 0.9 * (i / gens)  # variable mutation prob
 
-        # Amount of weights to mutate
-        #amount_to_mutate = int(mutation_prob * number_of_weights)
+            for j in range(0,number_of_weights):
+                prob3 = np.random.uniform(0,1)
+                if mutation_prob <= prob3: # prob of changing the weight with an mutation
+                    pop[x][j] = np.random.uniform(-1, 1)
 
-        #mutation_weights = np.random.choice(range(0, number_of_weights), amount_to_mutate)
-
-        for j in range(0,number_of_weights):
-            prob3 = np.random.uniform(0,1)
-            if mutation_prob <= prob3: # prob of changing the weight with an mutation
-                pop[x][j] = np.random.uniform(-1, 1)
-
-        fit_pop[x] = evaluate([pop[x]], env)
-        iter += 1
+            fit_pop[x] = evaluate([pop[x]], env)
+            iter += 1
 
     return pop,fit_pop
 
@@ -229,7 +232,7 @@ def run_simulation(args):
 
         for i in range(ini_g + 1, gens):
 
-            pop, fit_pop = evolution(pop, fit_pop, npop, gens, i, env, number_of_weights)
+            pop, fit_pop = evolution(pop, fit_pop, npop, gens, i, env, number_of_weights, args.algorithm)
 
             best = np.argmax(fit_pop)  # best solution in generation
             fit_pop[best] = float(evaluate(np.array([pop[best]]), env)[0])  # repeats best eval, for stability issues
@@ -290,6 +293,7 @@ if __name__ == '__main__':
     parser.add_argument('-gens', '--gens', type=int, default=20)
     parser.add_argument('-run_mode', '--run_mode', default='train')
     parser.add_argument('-experiment_name', '--experiment_name', default='test2.1')
+    parser.add_argument('-algorithm', '--algorithm', default='new')
     args = parser.parse_args(sys.argv[1:])
 
     run_simulation(args)
