@@ -13,7 +13,7 @@ from environment import Environment
 from demo_controller import player_controller
 import numpy as np
 
-enemy = 4
+enemy = 2
 runs = 10
 n_hidden_neurons = 10
 result_best_new = pd.DataFrame()
@@ -25,6 +25,12 @@ result_std_old = pd.DataFrame()
 gainscores_new = []
 gainscores_old = []
 
+result_best_new2 = []
+result_mean_new2= []
+result_std_new2= []
+result_best_old2= []
+result_mean_old2= []
+result_std_old2= []
 def sim_environment(experiment_name, enemy, n_hidden_neurons):
     # initializes environment with ai player using random controller, playing against static enemy
     env = Environment(experiment_name=experiment_name,
@@ -104,33 +110,103 @@ for i in range(1,runs+1):
 
 
 result_best_new['average'] = result_best_new.mean(numeric_only=True, axis=1)   
+result_best_new['std'] = result_best_new.std(numeric_only=True, axis=1) 
 result_mean_new['average'] = result_mean_new.mean(numeric_only=True, axis=1) 
 result_std_new['average'] = result_std_new.mean(numeric_only=True, axis=1) 
 
-result_best_old['average'] = result_best_old.mean(numeric_only=True, axis=1)   
+result_best_old['average'] = result_best_old.mean(numeric_only=True, axis=1) 
+result_best_old['std'] = result_best_old.std(numeric_only=True, axis=1)   
 result_mean_old['average'] = result_mean_old.mean(numeric_only=True, axis=1) 
 result_std_old['average'] = result_std_old.mean(numeric_only=True, axis=1) 
 
+#enemy4
+#result_best_new4 = result_best_new 
+#result_mean_new4 = result_mean_new 
+#result_std_new4 = result_std_new 
+#result_best_old4 = result_best_old   
+#result_mean_old4 = result_mean_old 
+#result_std_old4 = result_std_old 
 
-plt.plot(result_best_new["average"])
-plt.plot(result_best_old["average"])
-plt.fill_between(range(len(result_best_new["average"])), result_best_new["average"]-result_std_new["average"], result_best_new["average"]+result_std_new["average"], color='gray', alpha=0.4)
-plt.fill_between(range(len(result_best_old["average"])), result_best_old["average"]-result_std_old["average"], result_best_old["average"]+result_std_old["average"], color='gray', alpha=0.4)
-plt.ylabel('best Fitness')
-plt.xlabel('gens')
-plt.show()
+#enemy3
+#result_best_new3 = result_best_new 
+#result_mean_new3 = result_mean_new 
+#result_std_new3 = result_std_new 
+#result_best_old3 = result_best_old   
+#result_mean_old3 = result_mean_old 
+#result_std_old3 = result_std_old 
 
-plt.plot(result_mean_new["average"])
-plt.plot(result_mean_old["average"])
-plt.ylabel('mean Fitness')
-plt.xlabel('gens')
-plt.show()
+#enemy2
+#result_best_new2 = result_best_new 
+#result_mean_new2 = result_mean_new 
+#result_std_new2 = result_std_new 
+#result_best_old2 = result_best_old   
+#result_mean_old2 = result_mean_old 
+#result_std_old2 = result_std_old 
 
-plt.plot(result_std_new["average"])
-plt.plot(result_std_old["average"])
-plt.ylabel('std Fitness')
-plt.xlabel('gens')
-plt.show()
+
+f = plt.figure(figsize=(10,3))
+ax1 = f.add_subplot(131)
+ax2 = f.add_subplot(132)
+ax3 = f.add_subplot(133)
+
+
+f.suptitle('Best and mean fitness for enemy 2, 3 and 4.')
+ax1.plot(result_best_new2["average"])
+ax1.plot(result_best_old2["average"])
+ax1.plot(result_mean_new2["average"])
+ax1.plot(result_mean_old2["average"])
+ax1.fill_between(range(len(result_mean_new2["average"])), result_mean_new2["average"]-result_std_new2["average"]/5.5, result_mean_new2["average"]+result_std_new2["average"]/5.5, color='gray', alpha=0.4)
+ax1.fill_between(range(len(result_mean_old2["average"])), result_mean_old2["average"]-result_std_old2["average"]/5.5, result_mean_old2["average"]+result_std_old2["average"]/5.5, color='gray', alpha=0.4)
+ax1.fill_between(range(len(result_best_new2["average"])), result_best_new2["average"]-result_best_new2["std"]/5.5, result_best_new2["average"]+result_best_new2["std"]/5.5, color='gray', alpha=0.4)
+ax1.fill_between(range(len(result_best_old2["average"])), result_best_old2["average"]-result_best_old2["std"]/5.5, result_best_old2["average"]+result_best_old2["std"]/5.5, color='gray', alpha=0.4)
+
+
+ax2.plot(result_best_new3["average"])
+ax2.plot(result_best_old3["average"])
+ax2.plot(result_mean_new3["average"])
+ax2.plot(result_mean_old3["average"])
+ax2.fill_between(range(len(result_mean_new3["average"])), result_mean_new3["average"]-result_std_new3["average"]/5.5, result_mean_new3["average"]+result_std_new3["average"]/5.5, color='gray', alpha=0.4)
+ax2.fill_between(range(len(result_mean_old3["average"])), result_mean_old3["average"]-result_std_old3["average"]/5.5, result_mean_old3["average"]+result_std_old3["average"]/5.5, color='gray', alpha=0.4)
+ax2.fill_between(range(len(result_best_new3["average"])), result_best_new3["average"]-result_best_new3["std"]/5.5, result_best_new3["average"]+result_best_new3["std"]/5.5, color='gray', alpha=0.4)
+ax2.fill_between(range(len(result_best_old3["average"])), result_best_old3["average"]-result_best_old3["std"]/5.5, result_best_old3["average"]+result_best_old3["std"]/5.5, color='gray', alpha=0.4)
+
+
+
+ax3.plot(result_best_new4["average"])
+ax3.plot(result_best_old4["average"])
+ax3.plot(result_mean_new4["average"])
+ax3.plot(result_mean_old4["average"])
+ax3.fill_between(range(len(result_mean_new4["average"])), result_mean_new4["average"]-result_std_new4["average"]/5.5, result_mean_new4["average"]+result_std_new4["average"]/5.5, color='gray', alpha=0.4)
+ax3.fill_between(range(len(result_mean_old4["average"])), result_mean_old4["average"]-result_std_old4["average"]/5.5, result_mean_old4["average"]+result_std_old4["average"]/5.5, color='gray', alpha=0.4)
+ax3.fill_between(range(len(result_best_new4["average"])), result_best_new4["average"]-result_best_new4["std"]/5.5, result_best_new4["average"]+result_best_new4["std"]/5.5, color='gray', alpha=0.4)
+ax3.fill_between(range(len(result_best_old4["average"])), result_best_old4["average"]-result_best_old4["std"]/5.5, result_best_old4["average"]+result_best_old4["std"]/5.5, color='gray', alpha=0.4)
+
+
+
+#fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
+#fig.suptitle('Horizontally stacked subplots')
+
+#ax1.plot(result_best_new["average"])
+#ax1.plot(result_best_old["average"])
+#ax1.ylabel('best Fitness')
+#ax1.xlabel('gens')
+#plt.show()
+
+#ax1.plot(result_mean_new["average"])
+#ax1.plot(result_mean_old["average"])
+#ax1.fill_between(range(len(result_mean_new["average"])), result_mean_new["average"]-result_std_new["average"], result_mean_new["average"]+result_std_new["average"], color='gray', alpha=0.4)
+#ax1.fill_between(range(len(result_mean_old["average"])), result_mean_old["average"]-result_std_old["average"], result_mean_old["average"]+result_std_old["average"], color='gray', alpha=0.4)
+
+
+#ax2.ylabel('mean Fitness')
+#ax2.xlabel('gens')
+#plt.show()
+
+#plt.plot(result_std_new["average"])
+#plt.plot(result_std_old["average"])
+#ax3.ylabel('std Fitness')
+#ax3.xlabel('gens')
+#plt.show()
 
  
 #plt.fill_between(range(len(result_best["average"])), result_best["average"]-result_std["average"], result_best["average"]+result_std["average"], color='gray', alpha=0.4)
