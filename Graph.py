@@ -9,10 +9,10 @@ import sys, os
 sys.path.insert(0, 'evoman') 
 import pandas as pd
 import matplotlib.pyplot as plt
-from environment import Environment
+
 from demo_controller import player_controller
 import numpy as np
-
+from environment import Environment
 enemy = 2
 runs = 10
 n_hidden_neurons = 10
@@ -212,32 +212,38 @@ ax3.fill_between(range(len(result_best_old4["average"])), result_best_old4["aver
 #plt.fill_between(range(len(result_best["average"])), result_best["average"]-result_std["average"], result_best["average"]+result_std["average"], color='gray', alpha=0.4)
 
 
-#A = [[88,76,88,78,78,78,90,78,82,78],  [84,82,82,86,86,76,82,82,84,84]]
-#B = [[34,32,48,30,38,12,34,14,26,82],  [-20,40,22,32,12,32,2,20,42,48]]
-#C = [[62,-40,-30,47,40,39,58,12,67,-10], [-40,39,38,-30,9,9,-40,6,59,-16]]
+A = [[88,76,88,78,78,78,90,78,82,78],  [84,82,82,86,86,76,82,82,84,84]]
+B = [[34,32,48,30,38,12,34,14,26,82],  [-20,40,22,32,12,32,2,20,42,48]]
+C = [[62,-40,-30,47,40,39,58,12,67,-10], [-40,39,38,-30,9,9,-40,6,59,-16]]
 
-#plt.boxplot(A)
-
-
-#df = pd.DataFrame({'Enemy':['2','2','2','2','2','2','2','2','2','2', '3','3','3','3','3','3','3','3','3','3','4','4','4','4','4','4','4','4','4','4'],\
- #                 'alg1':[88,76,88,78,78,78,90,78,82,78,34,32,48,30,38,12,34,14,26,82,62,-40,-30,47,40,39,58,12,67,-10],\
-#                  'alg2':[84,82,82,86,86,76,82,82,84,84,-20,40,22,32,12,32,2,20,42,48,-40,39,38,-30,9,9,-40,6,59,-16]})
-
-#df = df[['Enemy','alg1','alg2']]
-
-#import pandas as pd
-#import matplotlib.pyplot as plt
-#import seaborn as sns
-#dd=pd.melt(df,id_vars=['Enemy'],value_vars=['alg1','alg2'],var_name='algorithm')
-#sns.boxplot(x='Enemy',y='Gain',data=dd,hue='Algorithm')
+plt.boxplot(A)
 
 
+df = pd.DataFrame({'Enemy':['2','2','2','2','2','2','2','2','2','2', '3','3','3','3','3','3','3','3','3','3','4','4','4','4','4','4','4','4','4','4'],\
+                   'alg2':[88,76,88,78,78,78,90,78,82,78,34,32,48,30,38,12,34,14,26,82,62,-40,-30,47,40,39,58,12,67,-10],\
+                   'alg1':[84,82,82,86,86,76,82,82,84,84,-20,40,22,32,12,32,2,20,42,48,-40,39,38,-30,9,9,-40,6,59,-16]})
+
+df = df[['Enemy','alg2','alg1']]
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+dd=pd.melt(df,id_vars=['Enemy'],value_vars=['alg2','alg1'],var_name='algorithm')
+sns.boxplot(x='Enemy',data=dd,hue='algorithm')
 
 
+from scipy.stats import ttest_ind, ttest_ind_from_stats
 
+A1 = [88,76,88,78,78,78,90,78,82,78]
+A2 = [84,82,82,86,86,76,82,82,84,84]
+B1 = [34,32,48,30,38,12,34,14,26,82] 
+B2 = [-20,40,22,32,12,32,2,20,42,48]
+C1 = [62,-40,-30,47,40,39,58,12,67,-10]
+C2 = [-40,39,38,-30,9,9,-40,6,59,-16]
 
-
-
+t, p = ttest_ind(C1, C2, equal_var=False)
+print(t)
+print(p)
 
 
 
