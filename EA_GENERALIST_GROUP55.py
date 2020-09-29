@@ -19,14 +19,13 @@ import glob, os
 n_hidden_neurons = 10
 enemy= [7,8]
 
-
-experiment_name = 'multi_demo'
+experiment_name = 'multi_demo_2'
 if not os.path.exists(experiment_name):
     os.makedirs(experiment_name)
 
 # initializes simulation in multi evolution mode, for multiple static enemies.
 env = Environment(experiment_name=experiment_name,
-                  enemies=[enemy],
+                  enemies=[2,3],
                   multiplemode="yes",
                   playermode="ai",
                   player_controller=player_controller(n_hidden_neurons),
@@ -53,12 +52,11 @@ n_vars = (env.get_num_sensors()+1)*n_hidden_neurons + (n_hidden_neurons+1)*5
 
 dom_u = 1
 dom_l = -1
-npop = 100
-gens = 30
+npop = 10
+gens = 20
+mutation_prob = 0.2  # variable mutation prob
 
 np.random.seed(69)
-
-
 
 # runs simulation
 def simulation(env,x):
@@ -69,9 +67,62 @@ def simulation(env,x):
 def evaluate(x):
     return np.array(list(map(lambda y: simulation(env,y), x)))
 
+def evolution(pop, fit_pop, npop):
+    partkilled = int(npop/4)  # a quarter of the population
+    bestparents = int(npop/2) # a half of the population
+    order = np.argsort(fit_pop)
+    partchanged = order[0:partkilled]
+    partmutated = order[partkilled:bestparents]
+    best_parents = order[bestparents:]
+    iter = 0 # counter
+    
+    
+    for x in partchanged:
+        #parent selection (tournament)
+        parent1 = tournament(best_parents, fit_pop)
+        parent2 = tournament(best_parents, fit_pop)
+
+        # crossover
+        for j in range(0,n_vars):
+            
+            prob1 = np.random.uniform(0,1)
+
+            if 0.5  <= prob1: #prob of changing the weight to the average of the two best individuals
+                pop[x][j] = pop[parent1][j]
+            else:
+                pop[x][j] = pop[parent2][j]
+
+            prob2 = np.random.uniform(0,1)
+            
+            if prob2 <= mutation_prob:
+                pop[x][j] = np.random.uniform(-1,1)
+            
+        fit_pop[x]=evaluate([pop[x]])
+    
+    for x in partmutated:
+            # Change individual to best parent
+            
+        pop[x] = pop[best_parents[-1-iter]]
+            
+
+        for j in range(0,n_vars):
+            prob3 = np.random.uniform(0,1)
+        
+            if prob3 <= mutation_prob: # prob of changing the weight with an mutation
+                pop[x][j] = np.random.uniform(-1, 1)
+
+        fit_pop[x] = evaluate([pop[x]])
+        iter += 1
+    
+    return pop, fit_pop
+
 # parent selection
-def parent_selection():
-    return
+def tournament(parent_range, fit_pop):
+    candidate_1, candidate_2 = np.random.choice(parent_range, 2)
+    if fit_pop[candidate_1] > fit_pop[candidate_2]:
+        return candidate_1
+    else:
+        return candidate_2
 
 #croos over
 def cross_over():
@@ -139,31 +190,11 @@ notimproved = 0
 
 for i in range(ini_g+1, gens):
 
-    offspring = crossover(pop)  # crossover
-    fit_offspring = evaluate(offspring)   # evaluation
-    pop = np.vstack((pop,offspring))
-    fit_pop = np.append(fit_pop,fit_offspring)
+    pop, fit_pop = evolution(pop, fit_pop, npop)
 
-    best = np.argmax(fit_pop) #best solution in generation
-    fit_pop[best] = float(evaluate(np.array([pop[best] ]))[0]) # repeats best eval, for stability issues
+    best = np.argmax(fit_pop)  # best solution in generation
+    fit_pop[best] = float(evaluate(np.array([pop[best]]))[0])  # repeats best eval, for stability issues
     best_sol = fit_pop[best]
-
-    # searching new areas
-
-    if best_sol <= last_sol:
-        notimproved += 1
-    else:
-        last_sol = best_sol
-        notimproved = 0
-
-    if notimproved >= 15:
-
-        file_aux  = open(experiment_name+'/results.txt','a')
-        file_aux.write('\ndoomsday')
-        file_aux.close()
-
-        pop, fit_pop = doomsday(pop,fit_pop)
-        notimproved = 0
 
     best = np.argmax(fit_pop)
     std  =  np.std(fit_pop)
@@ -188,9 +219,6 @@ for i in range(ini_g+1, gens):
     solutions = [pop, fit_pop]
     env.update_solutions(solutions)
     env.save_state()
-
-
-
 
 fim = time.time() # prints total execution time for experiment
 print( '\nExecution time: '+str(round((fim-ini)/60))+' minutes \n')
