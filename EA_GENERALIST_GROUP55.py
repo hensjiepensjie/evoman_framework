@@ -19,7 +19,7 @@ import glob, os
 n_hidden_neurons = 10
 enemy= [7,8]
 
-experiment_name = 'multi_demo_2'
+experiment_name = 'multi_demo_3'
 if not os.path.exists(experiment_name):
     os.makedirs(experiment_name)
 
@@ -52,9 +52,9 @@ n_vars = (env.get_num_sensors()+1)*n_hidden_neurons + (n_hidden_neurons+1)*5
 
 dom_u = 1
 dom_l = -1
-npop = 10
-gens = 20
-mutation_prob = 0.2  # variable mutation prob
+npop = 30
+gens = 30
+mutation_prob = 0.4  # variable mutation prob
 
 np.random.seed(69)
 
