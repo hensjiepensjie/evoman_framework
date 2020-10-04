@@ -19,11 +19,8 @@ import glob, os
 n_hidden_neurons = 10
 enemy= [7,8]
 
-<<<<<<< HEAD
-experiment_name = 'multi_demo_4'
-=======
+
 experiment_name = 'multi_demo_2'
->>>>>>> parent of 31de02a... 30-9-2020
 if not os.path.exists(experiment_name):
     os.makedirs(experiment_name)
 
@@ -56,15 +53,9 @@ n_vars = (env.get_num_sensors()+1)*n_hidden_neurons + (n_hidden_neurons+1)*5
 
 dom_u = 1
 dom_l = -1
-<<<<<<< HEAD
 npop = 5
 gens = 3
-mutation_prob = 0.4  # variable mutation prob
-=======
-npop = 10
-gens = 20
 mutation_prob = 0.2  # variable mutation prob
->>>>>>> parent of 31de02a... 30-9-2020
 
 np.random.seed(69)
 
@@ -79,14 +70,13 @@ def evaluate(x):
 
 def evolution(pop, fit_pop, npop):
     
-    pop_new = np.random.uniform(dom_l, dom_u, (npop, n_vars))  
-    fit_pop_new = []
-    
-    bestparents = int(npop/2) # a quarter of the population
+    partkilled = int(3*npop/4)  # a quarter of the population
+    bestparents = int(npop/4) # a half of the population
     order = np.argsort(fit_pop)
-    best_parents = order[bestparents:]   
-    
-    for x in pop_new:
+    partchanged = order[0:partkilled]
+    best_parents = order[bestparents:]
+         
+    for x in partchanged:
         #parent selection (tournament)
         parent1 = tournament(best_parents, fit_pop)
         parent2 = tournament(best_parents, fit_pop)
@@ -96,19 +86,12 @@ def evolution(pop, fit_pop, npop):
             
             prob1 = np.random.uniform(0,1)
 
-            pop_new[x][j] = pop[parent1][j] #+  0.5*pop[parent2][j]
-            pop_new[x][j] = pop_new[x][j]*np.random.normal(0,0.5)
-        
-        
-        fit_pop_new[x]=evaluate([pop_new[x]])
-    
-    
-    fit_pop_new.append(fit_pop)
-    pop_new.append(pop)
-   
-    order = np.argsort(fit_pop_new)
-    best_individuals = order[npop:]
-    pop = pop_new[best_individuals]
+            if 0.5  <= prob1: #prob of changing the weight to the average of the two best individuals
+                pop[x][j] = pop[parent1][j]
+            else:
+                pop[x][j] = pop[parent2][j]
+
+            fit_pop[x]=evaluate([pop[x]], env)
         
     return pop, fit_pop
 
