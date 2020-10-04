@@ -19,7 +19,7 @@ import glob, os
 n_hidden_neurons = 10
 enemy= [7,8]
 
-experiment_name = 'multi_demo_3'
+experiment_name = 'multi_demo_4'
 if not os.path.exists(experiment_name):
     os.makedirs(experiment_name)
 
@@ -52,8 +52,8 @@ n_vars = (env.get_num_sensors()+1)*n_hidden_neurons + (n_hidden_neurons+1)*5
 
 dom_u = 1
 dom_l = -1
-npop = 30
-gens = 30
+npop = 5
+gens = 3
 mutation_prob = 0.4  # variable mutation prob
 
 np.random.seed(69)
@@ -68,16 +68,15 @@ def evaluate(x):
     return np.array(list(map(lambda y: simulation(env,y), x)))
 
 def evolution(pop, fit_pop, npop):
-    partkilled = int(npop/4)  # a quarter of the population
-    bestparents = int(npop/2) # a half of the population
+    
+    pop_new = np.random.uniform(dom_l, dom_u, (npop, n_vars))  
+    fit_pop_new = []
+    
+    bestparents = int(npop/2) # a quarter of the population
     order = np.argsort(fit_pop)
-    partchanged = order[0:partkilled]
-    partmutated = order[partkilled:bestparents]
-    best_parents = order[bestparents:]
-    iter = 0 # counter
+    best_parents = order[bestparents:]   
     
-    
-    for x in partchanged:
+    for x in pop_new:
         #parent selection (tournament)
         parent1 = tournament(best_parents, fit_pop)
         parent2 = tournament(best_parents, fit_pop)
@@ -87,33 +86,20 @@ def evolution(pop, fit_pop, npop):
             
             prob1 = np.random.uniform(0,1)
 
-            if 0.5  <= prob1: #prob of changing the weight to the average of the two best individuals
-                pop[x][j] = pop[parent1][j]
-            else:
-                pop[x][j] = pop[parent2][j]
-
-            prob2 = np.random.uniform(0,1)
-            
-            if prob2 <= mutation_prob:
-                pop[x][j] = np.random.uniform(-1,1)
-            
-        fit_pop[x]=evaluate([pop[x]])
-    
-    for x in partmutated:
-            # Change individual to best parent
-            
-        pop[x] = pop[best_parents[-1-iter]]
-            
-
-        for j in range(0,n_vars):
-            prob3 = np.random.uniform(0,1)
+            pop_new[x][j] = pop[parent1][j] #+  0.5*pop[parent2][j]
+            pop_new[x][j] = pop_new[x][j]*np.random.normal(0,0.5)
         
-            if prob3 <= mutation_prob: # prob of changing the weight with an mutation
-                pop[x][j] = np.random.uniform(-1, 1)
-
-        fit_pop[x] = evaluate([pop[x]])
-        iter += 1
+        
+        fit_pop_new[x]=evaluate([pop_new[x]])
     
+    
+    fit_pop_new.append(fit_pop)
+    pop_new.append(pop)
+   
+    order = np.argsort(fit_pop_new)
+    best_individuals = order[npop:]
+    pop = pop_new[best_individuals]
+        
     return pop, fit_pop
 
 # parent selection
