@@ -321,10 +321,11 @@ def full_training_test(experiment_name, number_of_weights, n_hidden_neurons):
         for sol in range(len(bsols)):
             fit_sol = evaluate([bsols[sol]], env_8)
             if fit_sol > best_fit_sol:
-                best_final_solution = sol
+                best_final_solution = bsols[sol]
                 best_fit_sol = fit_sol
 
     print("Best fitness value against 8 enemies is %g" % best_fit_sol)
+
     return best_final_solution
 
 
