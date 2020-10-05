@@ -241,8 +241,8 @@ def run_simulation(args):
 
         # saves results for first pop
         file_aux = open(experiment_name + '/bestsols.txt', 'a')
-        file_aux.write('gen best_solution')
-        file_aux.write('\n' + str(ini_g) + ' ' + str(pop[best]))
+        file_aux.write(str(0) + ',')
+        np.savetxt(file_aux, pop[best], newline=',')
         file_aux.close()
 
         last_sol = fit_pop[best]
@@ -250,6 +250,9 @@ def run_simulation(args):
         results = []
 
         for i in range(ini_g+1, gens):
+            # Save old values
+            old_best = best
+            old_best_sol = fit_pop[old_best]
 
             pop, fit_pop, gen_pop = new_evolution(pop, fit_pop, npop, gen_pop, i, gens, env)
             best = np.argmax(fit_pop)  # best solution in generation
@@ -269,9 +272,13 @@ def run_simulation(args):
             file_aux.write('\n'+str(i)+' '+str(round(fit_pop[best],6))+' '+str(round(mean,6))+' '+str(round(std,6)))
             file_aux.close()
 
-            file_aux = open(experiment_name + '/bestsols.txt', 'a')
-            file_aux.write('\n' + str(i) + ' ' + str(pop[best]))
-            file_aux.close()
+            # Saves best solution if different from previous best
+            if old_best_sol != best_sol:
+                file_aux = open(experiment_name + '/bestsols.txt', 'a')
+                file_aux.write("\n")
+                file_aux.write(str(i) + ',')
+                np.savetxt(file_aux, pop[best], newline=',')
+                file_aux.close()
 
             # saves generation number
             file_aux  = open(experiment_name+'/gen.txt','w')
@@ -287,21 +294,38 @@ def run_simulation(args):
             env.save_state()
 
         fim = time.time() # prints total execution time for experiment
-        print( '\nExecution time: '+str(round((fim-ini)/60))+' minutes \n')
+        print('\nExecution time: '+str(round((fim-ini)/60))+' minutes \n')
 
         file = open(experiment_name+'/neuroended', 'w')  # saves control (simulation has ended) file for bash loop file
         file.close()
 
-    full_training_test(args)
+    final_sol = full_training_test(experiment_name, number_of_weights, n_hidden_neurons)
+    # saves file with the best solution
+    np.savetxt(experiment_name + '/final_sol.txt', final_sol)
 
-def full_training_test(args):
-    env = sim_environment(args.experiment_name, [1,2,3,4,5,6,7,8], args.n_hidden_neurons)
-    bsol = np.loadtxt(args.experiment_name + '/bestsols.txt')
-    print('\n RUNNING SAVED BEST SOLUTION \n')
-    env.update_parameter('speed', 'normal')
-    evaluate([bsol], env)
 
-    sys.exit(0)
+def full_training_test(experiment_name, number_of_weights, n_hidden_neurons):
+    print('\n Running best solutions against all 8 enemies')
+    env_8 = sim_environment(experiment_name, [1,2,3,4,5,6,7,8], n_hidden_neurons)
+    bsols = np.loadtxt(experiment_name + '/bestsols.txt', delimiter = ',', usecols=range(1, number_of_weights+1))
+
+    best_fit_sol = 0
+    best_final_solution = []
+
+    # If only one solution found check and return
+    if len(bsols.shape) == 1:
+        best_fit_sol = evaluate([bsols], env_8)
+        best_final_solution = bsols
+
+    else:
+        for sol in range(len(bsols)):
+            fit_sol = evaluate([bsols[sol]], env_8)
+            if fit_sol > best_fit_sol:
+                best_final_solution = sol
+                best_fit_sol = fit_sol
+
+    print("Best fitness value against 8 enemies is %g" % best_fit_sol)
+    return best_final_solution
 
 
 if __name__ == '__main__':
@@ -318,3 +342,4 @@ if __name__ == '__main__':
     args = parser.parse_args(sys.argv[1:])
 
     run_simulation(args)
+    #full_training_test('multi_demo', 265, 10)
