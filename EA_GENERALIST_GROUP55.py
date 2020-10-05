@@ -147,7 +147,7 @@ def run_simulation(args):
     run_mode = args.run_mode  # train or test or trainten
 
     # run type train or test
-    if run_mode == 'test':
+    if run_mode == 'test' or run_mode == 'test_final':
         experiment_name = args.experiment_name  # train or test or trainten
 
     dom_u = 1
@@ -155,13 +155,21 @@ def run_simulation(args):
     npop = args.npop  # population size
     gens = args.gens  # number of generations
 
-    mutation_prob = 0.2  # variable mutation prob
-
     # loads file with the best solution for testing
     if run_mode == 'test':
         env = sim_environment(experiment_name, enemies, n_hidden_neurons)
         bsol = np.loadtxt(experiment_name + '/best.txt')
         print('\n RUNNING SAVED BEST SOLUTION \n')
+        env.update_parameter('speed', 'normal')
+        evaluate([bsol], env)
+
+        sys.exit(0)
+
+    # loads file with the best solution for testing
+    if run_mode == 'test_final':
+        env = sim_environment(experiment_name, [1,2,3,4,5,6,7,8], n_hidden_neurons)
+        bsol = np.loadtxt(experiment_name + '/final_sol.txt')
+        print('\n RUNNING SAVED BEST FINAL SOLUTION \n')
         env.update_parameter('speed', 'normal')
         evaluate([bsol], env)
 
