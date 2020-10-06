@@ -20,7 +20,7 @@ import glob, os
 
 n_hidden_neurons = 10
 
-experiment_name = 'multi_demo'
+experiment_name = 'multi_demo_1357'
 if not os.path.exists(experiment_name):
     os.makedirs(experiment_name)
 

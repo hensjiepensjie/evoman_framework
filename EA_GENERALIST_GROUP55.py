@@ -376,7 +376,7 @@ if __name__ == '__main__':
     parser.add_argument('-npop', '--npop', default=40, type=int),
     parser.add_argument('-gens', '--gens', type=int, default=20)
     parser.add_argument('-run_mode', '--run_mode', default='train')
-    parser.add_argument('-experiment_name', '--experiment_name', default='multi_demo')
+    parser.add_argument('-experiment_name', '--experiment_name', default='multi_demo_1357')
     args = parser.parse_args(sys.argv[1:])
 
     run_simulation(args)
