@@ -360,6 +360,7 @@ def full_training_test(experiment_name, number_of_weights, n_hidden_neurons, ini
 
     # If no best_final_solution is found after continuing, quit
     if not best_final_solution.any():
+        print('no better solution found than previous')
         sys.exit(0)
 
     return best_final_solution
