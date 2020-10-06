@@ -274,6 +274,12 @@ def run_simulation(args):
             old_best = best
             old_best_sol = fit_pop[old_best]
 
+            # Delete worst half and generate random individuals every 20 generations
+            if i % 20 == 0:
+                order = np.argsort(fit_pop)
+                new_pop = np.random.uniform(dom_l, dom_u, (int(npop/2), number_of_weights))
+                pop[order[:int(npop/2)]] = new_pop
+
             pop, fit_pop, gen_pop = new_evolution(pop, fit_pop, npop, gen_pop, i, gens, env)
             best = np.argmax(fit_pop)  # best solution in generation
 
