@@ -136,7 +136,7 @@ def mutation(mutant, sigma):
 
 
 def run_simulation(args):
-    np.random.seed(69)
+    #np.random.seed(69)
     n_hidden_neurons = args.n_neurons
 
     ini = time.time()  # sets time marker
@@ -380,4 +380,3 @@ if __name__ == '__main__':
     args = parser.parse_args(sys.argv[1:])
 
     run_simulation(args)
-    #full_training_test('multi_demo', 265, 10)
