@@ -249,7 +249,7 @@ def run_simulation(args):
 
         # saves results for first pop
         file_aux = open(experiment_name + '/bestsols.txt', 'a')
-        file_aux.write(str(0) + ',')
+        file_aux.write(str(ini_g) + ',')
         np.savetxt(file_aux, pop[best], newline=',')
         file_aux.close()
 
