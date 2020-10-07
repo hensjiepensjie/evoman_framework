@@ -220,16 +220,24 @@ def run_simulation(args):
             ini_g = int(file_aux.readline())
             file_aux.close()
 
-            # finds last solution line
-            file_aux = open(experiment_name + '/gen_sol.txt', 'r')
-            ini_sol = int(file_aux.readline())
-            file_aux.close()
+            if os.path.exists(experiment_name + '/gen_sol.txt'):
 
-            # finds last best final fitness
-            file_aux = open(experiment_name + '/best_fit_sol.txt', 'r')
-            best_fit_sol = float(file_aux.readline())
-            file_aux.close()
+                # finds last solution line
+                file_aux = open(experiment_name + '/gen_sol.txt', 'r')
+                ini_sol = int(file_aux.readline())
+                file_aux.close()
 
+            else:
+                ini_sol = 0
+
+            if os.path.exists(experiment_name + '/best_fit_sol.txt'):
+                # finds last best final fitness
+                file_aux = open(experiment_name + '/best_fit_sol.txt', 'r')
+                best_fit_sol = float(file_aux.readline())
+                file_aux.close()
+
+            else:
+                best_fit_sol = 0
         # saves results for first pop
         file_aux = open(experiment_name + '/results.txt', 'a')
         file_aux.write('\n\ngen best mean std best_sol')
