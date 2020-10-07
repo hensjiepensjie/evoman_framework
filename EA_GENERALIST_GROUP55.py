@@ -34,51 +34,23 @@ def simulation(env,x):
 def evaluate(x, env):
     return np.array(list(map(lambda y: simulation(env,y), x)))
 
-def evolution(pop, fit_pop, npop, number_of_weights, env):
-    
-    partkilled = int(3*npop/4)  # a quarter of the population
-    bestparents = int(npop/4) # a half of the population
-    order = np.argsort(fit_pop)
-    partchanged = order[0:partkilled]
-    best_parents = order[bestparents:]
-         
-    for x in partchanged:
-        #parent selection (tournament)
-        parent1 = tournament(best_parents, fit_pop)
-        parent2 = tournament(best_parents, fit_pop)
-
-        # crossover
-        for j in range(0, number_of_weights):
-            
-            prob1 = np.random.uniform(0,1)
-
-            if 0.5  <= prob1: #prob of changing the weight to the average of the two best individuals
-                pop[x][j] = pop[parent1][j]
-            else:
-                pop[x][j] = pop[parent2][j]
-
-        fit_pop[x] = evaluate([pop[x]], env)
-        
-    return pop, fit_pop
-
-# parent selection
-def tournament(parent_range, fit_pop):
-    candidate_1, candidate_2 = np.random.choice(parent_range, 2)
-    if fit_pop[candidate_1] > fit_pop[candidate_2]:
-        return candidate_1
-    else:
-        return candidate_2
-
 
 def new_evolution(pop, fit_pop, npop, gen_pop, gen, total_gens, env):
     offspring = []
     n_mutants = int(npop / 2) # Half of population
     # Crossover
-    # Integer list to make random pairs of parents from full population
-    int_list = np.arange(npop)
-    mating_parents = np.random.choice(int_list, size=(int(npop / 2), 2), replace=False)
-    for pair in mating_parents:
-        child = cross_over(pair, pop)
+    # Integer list to make random pairs of parents from full population (If using this: uncomment line 43-47 and comment line 50-54)
+    #int_list = np.arange(npop)
+    #mating_parents = np.random.choice(int_list, size=(int(npop / 2), 2), replace=False)
+    #for pair in mating_parents:
+    #    child = cross_over(pair, pop)
+    #    offspring.append(child)
+
+    # Choose pairs with tournament (If using this: comment line 43-47 and uncomment line 50-54)
+    for i in range(n_mutants):
+        parent_1 = tournament(len(pop), fit_pop)
+        parent_2 = tournament(len(pop), fit_pop)
+        child = cross_over([parent_1, parent_2], pop)
         offspring.append(child)
 
     # Mutation over parents and children sampled
@@ -113,6 +85,15 @@ def new_evolution(pop, fit_pop, npop, gen_pop, gen, total_gens, env):
     gen_pop = temp_gen_pop[surviving_order][-npop:]
 
     return pop, fit_pop, gen_pop
+
+
+# parent selection
+def tournament(parent_range, fit_pop):
+    candidate_1, candidate_2 = np.random.choice(parent_range, 2, replace=False)
+    if fit_pop[candidate_1] > fit_pop[candidate_2]:
+        return candidate_1
+    else:
+        return candidate_2
 
 
 # convex combination of two parents
