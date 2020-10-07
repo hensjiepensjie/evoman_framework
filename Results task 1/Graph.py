@@ -212,9 +212,8 @@ ax3.fill_between(range(len(result_best_old4["average"])), result_best_old4["aver
 #plt.fill_between(range(len(result_best["average"])), result_best["average"]-result_std["average"], result_best["average"]+result_std["average"], color='gray', alpha=0.4)
 
 
-A = [[88,76,88,78,78,78,90,78,82,78],  [84,82,82,86,86,76,82,82,84,84]]
+A = [[42,35,27,32,29,29,46,78,82,78],  [84,82,82,86,86,76,82,82,84,84]]
 B = [[34,32,48,30,38,12,34,14,26,82],  [-20,40,22,32,12,32,2,20,42,48]]
-C = [[62,-40,-30,47,40,39,58,12,67,-10], [-40,39,38,-30,9,9,-40,6,59,-16]]
 
 plt.boxplot(A)
 
