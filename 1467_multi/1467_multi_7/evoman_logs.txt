@@ -2,15 +2,17 @@
 
 MESSAGE: Pygame initialized for simulation.
 
+PARAMETER CHANGE: speed = normal
+
 RUN: run status: enemy: 1; fitness: 38.64042613132762; player life: 0; enemy life: 50.0; time: 578
 
 RUN: run status: enemy: 2; fitness: 92.17598249381265; player life: 78; enemy life: 0; time: 277
 
 RUN: run status: enemy: 3; fitness: 56.78539190157781; player life: 0; enemy life: 30.0; time: 500
 
-RUN: run status: enemy: 4; fitness: 30.330119077019482; player life: 0; enemy life: 60.0; time: 290
+RUN: run status: enemy: 4; fitness: 91.48326625757946; player life: 64.60000000000034; enemy life: 0; time: 145
 
-RUN: run status: enemy: 5; fitness: 47.964518567475245; player life: 0; enemy life: 40.0; time: 418
+RUN: run status: enemy: 5; fitness: 29.843021014414447; player life: 0; enemy life: 60.0; time: 472
 
 RUN: run status: enemy: 6; fitness: 57.344008189180144; player life: 0; enemy life: 30.0; time: 286
 

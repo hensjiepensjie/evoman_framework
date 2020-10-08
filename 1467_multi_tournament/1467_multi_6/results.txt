@@ -160,3 +160,12 @@ gen best mean std best_sol
 
 gen best mean std best_sol
 149 33.469133 32.619189 0.644763
+
+gen best mean std best_sol
+149 33.469133 32.619189 0.644763
+
+gen best mean std best_sol
+149 33.469133 32.619189 0.644763
+
+gen best mean std best_sol
+149 33.469133 32.619189 0.644763
