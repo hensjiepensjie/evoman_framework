@@ -175,5 +175,52 @@ dd=pd.melt(df,id_vars=['Enemy'],value_vars=['alg1','alg2'],var_name='alg')
 sns.boxplot(x='Enemy',y='value',data=dd,hue='alg')
 
 
+from scipy.stats import ttest_ind, ttest_ind_from_stats
 
+A1 = [-10.68,-9.59,-24.62,-16.65,-36.03,-26.39,-35.02,-11.42,2.38,-4.87]
+A2 = [-37.12,-26.49,-24.8,-37.29,-22.39,-40.66,-17.51,-17.26,-14.73,-11.04]
+B1 = [-9.98,-14.05,2.04,3.33,-6.51,-9.53,-9.20,-8.37,-8.65,-9.43]
+B2 = [-12.35,-8.62,5.65,-3.51,-5.35,-4.28,-7.30,-12.3,-4.93,-9.80]
+
+t, p = ttest_ind(B1, B2, equal_var=False)
+print(t)
+print(p)
+
+
+
+import sys, os
+sys.path.insert(0, 'evoman') 
+from demo_controller import player_controller
+import numpy as np
+from environment import Environment
+    
+def sim_environment(experiment_name, enemies, n_hidden_neurons):
+        # initializes simulation in multi evolution mode, for multiple static enemies.
+    env = Environment(experiment_name=experiment_name,
+                         enemies=enemies,
+                         multiplemode="yes",
+                         playermode="ai",
+                         player_controller=player_controller(n_hidden_neurons),
+                         enemymode="static",
+                         level=2,
+                         speed="fastest")
+        
+    return env
+   
+n_hidden_neurons= 10
+    
+gainscores1 = []
+file = '2358_multi_10'
+file_location = '2358_multi_tournament'
+#get the new alogirhm
+for i in range(1,6):
+    
+    experiment_name = (file_location + '/' + file)
+    gainTotal = 0
+        
+    env = sim_environment(experiment_name, [1,2,3,4,5,6,7,8], n_hidden_neurons)
+    bsol = np.loadtxt(file_location + '/' + file + '/final_sol.txt')
+    f,p,e,t = env.play(pcont=bsol)
+    gain1 = p - e
+    gainscores1.append(gain1)
 
