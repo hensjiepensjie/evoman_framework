@@ -195,7 +195,7 @@ import numpy as np
 from environment import Environment
     
 def sim_environment(experiment_name, enemies, n_hidden_neurons):
-        # initializes simulation in multi evolution mode, for multiple static enemies.
+    # initializes simulation in multi evolution mode, for multiple static enemies.
     env = Environment(experiment_name=experiment_name,
                          enemies=enemies,
                          multiplemode="yes",
