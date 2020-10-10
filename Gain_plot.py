@@ -22,10 +22,11 @@ def sim_environment(experiment_name, enemies, n_hidden_neurons):
 n_hidden_neurons = 10
 
 gainscores1 = []
-file = '2358_multi_10'
-file_location = '2358_multi_tournament'
+
 # get the new algorithm
 for i in range(1, 6):
+    file = '1467_multi_10'
+    file_location = '1467_multi_tournament'   
     experiment_name = (file_location + '/' + file)
     gainTotal = 0
 

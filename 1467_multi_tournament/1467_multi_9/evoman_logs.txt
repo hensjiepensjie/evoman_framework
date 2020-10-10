@@ -10,10 +10,10 @@ RUN: run status: enemy: 3; fitness: 21.82951600496185; player life: 0; enemy lif
 
 RUN: run status: enemy: 4; fitness: 30.36521039683075; player life: 0; enemy life: 60.0; time: 280
 
-RUN: run status: enemy: 5; fitness: 90.0252886203982; player life: 56.20000000000032; enemy life: 0; time: 269
+RUN: run status: enemy: 5; fitness: 90.4452886203982; player life: 60.40000000000033; enemy life: 0; time: 269
 
 RUN: run status: enemy: 6; fitness: 66.5619206910768; player life: 0; enemy life: 20.0; time: 230
 
 RUN: run status: enemy: 7; fitness: 75.2634277025208; player life: 0; enemy life: 10.0; time: 310
 
-RUN: run status: enemy: 8; fitness: 39.340517784240376; player life: 0; enemy life: 50.0; time: 287
+RUN: run status: enemy: 8; fitness: 48.31302464366018; player life: 0; enemy life: 40.0; time: 295
